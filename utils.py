@@ -1,9 +1,6 @@
 import os, sys
 import pandas as pd
 import numpy as np
-from gensim.models import word2vec
-from gensim.models.keyedvectors import KeyedVectors
-import gensim
 import logging, urllib.request, zipfile
 from sklearn.preprocessing import LabelEncoder
 
@@ -115,43 +112,6 @@ def convert_data_to_index(string_data, wv):
     return index_data
 
 
-def load_gensim_model(root_path, saved_name="pretrained_model"):
-    """
-    Module that, given a root path, 
-    loads and potentially trains a gensim 
-    model on the mattmahoney dataset,
-    saves the model as my model
-    and returns the trained model
-    """
-    
-    # If there is a pretrained model, load it
-    if os.path.exists(root_path+saved_name):
-        return gensim.models.Word2Vec.load(root_path + saved_name)
-    
-    if os.path.exists(root_path+saved_name+".bin"):
-        model = KeyedVectors.load_word2vec_format(root_path+saved_name+".bin", binary=True)
-        return model
-        
-    
-    # otherwise, load default model
-    url = 'http://mattmahoney.net/dc/'
-    filename = maybe_download('text8.zip', url)
-    
-    
-    
-    if not os.path.exists((root_path + filename).strip('.zip')):
-        zipfile.ZipFile(root_path+filename).extractall()
-        
-    sentences = word2vec.Text8Corpus((root_path + filename).strip('.zip'))
-    
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-    
-    model = word2vec.Word2Vec(sentences, iter=10, min_count=10, size=300, workers=4)
-
-    # save and reload the model
-    model.save(root_path + saved_name)
-    
-    return model 
 
 
 
